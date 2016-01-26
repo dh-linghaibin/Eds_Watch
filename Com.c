@@ -2,24 +2,23 @@
 
 #include "Com.h"
 #include "Delay.h"
-#include "Delay.h"
 
 
 void ComInit(void) {
     //Watch
-    PD_DDR_DDR4 = 0;
-    PD_CR1_C14 = 0;
-    PD_CR2_C24 = 1;
+    PA_DDR_DDR2 = 0;
+    PA_CR1_C12 = 0;
+    PA_CR2_C22 = 1;
     
     //外部中断初始化
-	EXTI_CR1 &= ~BIT(6);//开启PD口中断
-	EXTI_CR1 &= ~BIT(7);
+	EXTI_CR1 &= ~BIT(0);//开启PA口中断
+	EXTI_CR1 &= ~BIT(1);
 }
 
-#define COM_BIT_OUT 	PD_ODR_ODR4
-#define COM_BIT_IN 	    PD_IDR_IDR4
-#define COM_BIT_DR      PD_DDR_DDR4
-#define COM_BIT_INT     PD_CR2_C24
+#define COM_BIT_OUT 	PA_ODR_ODR2
+#define COM_BIT_IN 	    PA_IDR_IDR2
+#define COM_BIT_DR      PA_DDR_DDR2
+#define COM_BIT_INT     PA_CR2_C22
 
 u8 ComSend(u8 data[]) {
 	u16 wait = 0;
@@ -86,7 +85,7 @@ u8 ComRead(u8 data_s[]) {
 			return 0x44;
 		}
 	}
-	if(wait > 30) {
+	if(wait > 11) {
 		wait = 0;
 		COM_BIT_DR = 1;//设置为输出
 		COM_BIT_OUT = 0;
@@ -111,7 +110,7 @@ u8 ComRead(u8 data_s[]) {
 						return 0x44;
 					}
 				}
-				if(wait > 25) {//为1
+				if(wait > 11) {//为1
 					data|=0x01;  
 				}
 				wait = 0;					
@@ -149,8 +148,21 @@ void ComClearFlag(void) {
     rs_ok = 0;
 }
 
-#pragma vector=8
-__interrupt void EXTI_PORTD_IRQHandler(void)
+void ComSendCmdWatch(u8 cmd,u8 par1,u8 par2,u8 par3) {
+    u8 com_t_data[5] = {0,0,0,0,0};//前拨
+	com_t_data[0] = cmd; //cmd
+	com_t_data[1] = par1;
+	com_t_data[2] = par2;
+	com_t_data[3] = par3;
+    com_t_data[4] = com_t_data[0]+com_t_data[1]+com_t_data[2]
+                                    +com_t_data[3];
+    INTOFF
+	ComSend(com_t_data);
+    INTEN
+}
+
+#pragma vector=5
+__interrupt void EXTI_PORTA_IRQHandler(void)
 {
     INTOFF
     if(ComRead(com_date) == 0x88) {

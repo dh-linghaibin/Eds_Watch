@@ -5,5 +5,6 @@
 
 #include "Type.h"
 
+void Ds1302Init(void);
 
 #endif
