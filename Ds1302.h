@@ -6,5 +6,6 @@
 #include "Type.h"
 
 void Ds1302Init(void);
+u8* Ds1302GetTime(void);
 
 #endif

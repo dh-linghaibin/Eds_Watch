@@ -800,7 +800,7 @@
         <debug>0</debug>
         <option>
           <name>GenDeviceSelectMenu</name>
-          <state></state>
+          <state>STM8S103K3	STM8S103K3</state>
         </option>
         <option>
           <name>GenCodeModel</name>
@@ -840,11 +840,11 @@
         </option>
         <option>
           <name>GenRTDescription</name>
-          <state></state>
+          <state>Use the normal configuration of the C/EC++ runtime library. No locale interface, C locale, no file descriptor support, no multibytes in printf and scanf, and no hex floats in strtod.</state>
         </option>
         <option>
           <name>GenRTConfigPath</name>
-          <state></state>
+          <state>$TOOLKIT_DIR$\LIB\dlstm8smn.h</state>
         </option>
         <option>
           <name>GenLibInFormatter</name>
@@ -853,7 +853,7 @@
         </option>
         <option>
           <name>GenLibInFormatterDescription</name>
-          <state></state>
+          <state>Full formatting, without multibytes.</state>
         </option>
         <option>
           <name>GenLibOutFormatter</name>
@@ -862,15 +862,15 @@
         </option>
         <option>
           <name>GenLibOutFormatterDescription</name>
-          <state></state>
+          <state>Full formatting, without multibytes.</state>
         </option>
         <option>
           <name>GenStackSize</name>
-          <state>###Uninitialized###</state>
+          <state>0x100</state>
         </option>
         <option>
           <name>GenHeapSize</name>
-          <state>###Uninitialized###</state>
+          <state>0x100</state>
         </option>
         <option>
           <name>GeneralEnableMisra</name>
@@ -943,7 +943,7 @@
         </option>
         <option>
           <name>IccOutputFile</name>
-          <state></state>
+          <state>$FILE_BNAME$.o</state>
         </option>
         <option>
           <name>IccCodeModel</name>
@@ -1316,7 +1316,7 @@
         </option>
         <option>
           <name>IlinkOutputFile</name>
-          <state>###Unitialized###</state>
+          <state>Eds_Watch.out</state>
         </option>
         <option>
           <name>IlinkDebugInfoEnable</name>
@@ -1591,6 +1591,9 @@
   </file>
   <file>
     <name>$PROJ_DIR$\main.c</name>
+  </file>
+  <file>
+    <name>$PROJ_DIR$\Menu.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$\Sys.c</name>

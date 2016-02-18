@@ -94,9 +94,8 @@ static void writeds1302(u8 fp,u8 _code) {
 }
 
 static u8 cur_time[3];
-u8* Ds1302GetTime(u8 bit) {
+u8* Ds1302GetTime(void) {
 	u8 i,t;
-    
 	u8 add=0x81;
 	for(i=0;i<3;i++) {
 		t=readds1302(add);	

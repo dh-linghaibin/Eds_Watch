@@ -36,6 +36,11 @@ void HtlcdTime(u8 hour, u8 min, u8 sec);
 void HT1622_show_setp(u8 behind_setp,u8 rear_setp);
 void HT1622_duan(u8 addr,u8 data);
 void HT1622_duan_big_t(u8 addr,u8 data);
-
+void HtlcdRefresh(void);
+void HtlcdRegion1(u8 bit, u16 data);
+void HtlcdRegion2(u8 bit, u16 data);
+void HtlcdRegion3(u8 bit, u8 num1, u8 num2, u8 num3, u8 num4);
+void HtlcdOpenBacklight(void);
+void HtlcdCloseBacklight(void);
 
 #endif

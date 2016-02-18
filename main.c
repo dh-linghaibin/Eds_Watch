@@ -5,39 +5,54 @@
 #include "Timer.h"
 #include "Botton.h"
 #include "Led.h"
+#include "Delay.h"
+#include "Ds1302.h"
+#include "Menu.h"
 
 int main( void ) {
     SysInit();
     TimerInit();
     ComInit();
+    Ds1302Init();
     HtlcdInit();
     BottonInit();
     LedInit();
+    MenuInit();
     INTEN
-    HT1622_show_setp(4,1);
-    HT1622_duan(18,2);
-    
-    HT1622_duan_big_t(21,0);HtlcdTime(14,33,24);
     while(1) {
-        if(TimerGetSec() == 0x80) {
+        u8 botton_bit = 0;
+        if(TimerGetSec() > 30) {
             TimerSetSec(0);
-            LedSet(1);
-            //ComSendCmdWatch(0x01,0x02,0x03,0x04);
+           // SysSleep();
+        }
+        botton_bit = BottonReadBehind();
+        if(botton_bit == 0x80) {
+            TimerSetSec(0);
+            ComSendCmdWatch(front,add_setp,0x00,0x00);
+        } else if(botton_bit == 0x81){
+            TimerSetSec(0);
+            ComSendCmdWatch(front,sub_setp,0x00,0x00);
         }
         
-        if(BottonReadBehind() == 0x81) {
-            ComSendCmdWatch(0x01,0x02,0x03,0x04);
+        botton_bit = BottonReadRear();
+        if(botton_bit == 0x80) {
+            TimerSetSec(0);
+            ComSendCmdWatch(behind,sub_exchange,0x00,0x00);
         }
         
         if(ComGetFlag() == 0x80) {
             ComClearFlag();
             LedSet(0);
-        }
-        
-        if(ComGetFlag() == 0x80) {
-            ComClearFlag();
             switch(ComGetData(0)) {
-                case 0x00:
+                case front:
+                    switch(ComGetData(1)) {
+                        case dce_gear:MenuSetStall(ComGetData(2),0);break;
+                    }
+                break;
+                case behind: 
+                    switch(ComGetData(1)) {
+                        case dce_gear:MenuSetStall(0,ComGetData(2));break;
+                    }
                 break;
             }
         }

@@ -101,7 +101,7 @@ static void W1622_success(u8 SEG,u8 cnt,u8 *p)
 }
 
 //显示更新,所有8x32段全部刷新
-void HT1622_disp_renew(void)   
+void HtlcdRefresh(void)   
 {
 	W1622_success(0,32,dispram);
 }
@@ -168,7 +168,7 @@ void HtlcdDisAll(void)
     }
 
 }
-void HT1622_duan(u8 addr,u8 data)//上面一行
+void HtlcdAdrNum(u8 addr,u8 data)//上面一行
 {
 	switch(data)
 	{
@@ -235,7 +235,7 @@ void HT1622_duan(u8 addr,u8 data)//上面一行
 	}
 }
 
-void HT1622_duan_min(u8 addr,u8 data)//显示时间的小位置
+void HtlcdAdrTime(u8 addr,u8 data)//显示时间的小位置
 {
 	switch(data)
 	{
@@ -302,7 +302,7 @@ void HT1622_duan_min(u8 addr,u8 data)//显示时间的小位置
 	}
 }
 
-void HT1622_duan_big(u8 addr,u8 data)//显示速度的位置
+void HtlcdAdrBigNum(u8 addr,u8 data)//显示速度的位置
 {
 	switch(data)
 	{
@@ -449,7 +449,7 @@ void HT1622_duan_big(u8 addr,u8 data)//显示速度的位置
 	}
 }
 
-void HT1622_duan_big_t(u8 addr,u8 data)//还没有写好的  30
+void HtlcdAdrDoubleNum(u8 addr,u8 data)//写好了 最后一行
 {
 	switch(data)
 	{
@@ -458,24 +458,6 @@ void HT1622_duan_big_t(u8 addr,u8 data)//还没有写好的  30
 				HT1622_dispON(3,addr);//b
 				HT1622_dispON(6,addr);//c
 				HT1622_dispON(7,addr);//d
-				HT1622_dispON(7,addr-1);//e
-				HT1622_dispON(4,addr-1);//f
-				HT1622_dispON(2,addr-1);//g
-				HT1622_dispOFF(2,addr);//h
-				HT1622_dispOFF(1,addr-1);//i
-				HT1622_dispOFF(1,addr);//j
-				HT1622_dispOFF(3,addr-1);//k
-				HT1622_dispOFF(4,addr);//l
-                HT1622_dispOFF(6,addr-1);//m
-                HT1622_dispOFF(5,addr);//n
-                HT1622_dispON(0,addr-1);//o
-                HT1622_dispOFF(5,addr-1);//p
-				break;
-		case 1:
-				HT1622_dispOFF(0,addr);//a
-				HT1622_dispOFF(3,addr);//b
-				HT1622_dispOFF(6,addr);//c
-				HT1622_dispOFF(7,addr);//d
 				HT1622_dispOFF(7,addr-1);//e
 				HT1622_dispOFF(4,addr-1);//f
 				HT1622_dispOFF(2,addr-1);//g
@@ -489,22 +471,40 @@ void HT1622_duan_big_t(u8 addr,u8 data)//还没有写好的  30
                 HT1622_dispOFF(0,addr-1);//o
                 HT1622_dispON(5,addr-1);//p
 				break;
+		case 1:
+				HT1622_dispOFF(0,addr);//a
+				HT1622_dispON(3,addr);//b
+				HT1622_dispON(6,addr);//c
+				HT1622_dispOFF(7,addr);//d
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
+				HT1622_dispOFF(2,addr);//h
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
+				HT1622_dispOFF(4,addr);//l
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
+                HT1622_dispOFF(5,addr-1);//p
+				break;
 		case 2:
 				HT1622_dispON(0,addr);//a
 				HT1622_dispON(3,addr);//b
-				HT1622_dispON(6,addr);//c
+				HT1622_dispOFF(6,addr);//c
 				HT1622_dispON(7,addr);//d
-				HT1622_dispON(7,addr-1);//e
-				HT1622_dispON(4,addr-1);//f
-				HT1622_dispON(2,addr-1);//g
-				HT1622_dispON(2,addr);//h
-				HT1622_dispON(1,addr-1);//i
-				HT1622_dispON(1,addr);//j
-				HT1622_dispON(3,addr-1);//k
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
+				HT1622_dispOFF(2,addr);//h
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
 				HT1622_dispON(4,addr);//l
-                HT1622_dispON(6,addr-1);//m
-                HT1622_dispON(5,addr);//n
-                HT1622_dispON(0,addr-1);//o
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
                 HT1622_dispON(5,addr-1);//p
 				break;
 		case 3:
@@ -512,107 +512,107 @@ void HT1622_duan_big_t(u8 addr,u8 data)//还没有写好的  30
 				HT1622_dispON(3,addr);//b
 				HT1622_dispON(6,addr);//c
 				HT1622_dispON(7,addr);//d
-				HT1622_dispON(7,addr-1);//e
-				HT1622_dispON(4,addr-1);//f
-				HT1622_dispON(2,addr-1);//g
-				HT1622_dispON(2,addr);//h
-				HT1622_dispON(1,addr-1);//i
-				HT1622_dispON(1,addr);//j
-				HT1622_dispON(3,addr-1);//k
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
+				HT1622_dispOFF(2,addr);//h
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
 				HT1622_dispON(4,addr);//l
-                HT1622_dispON(6,addr-1);//m
-                HT1622_dispON(5,addr);//n
-                HT1622_dispON(0,addr-1);//o
-                HT1622_dispON(5,addr-1);//p
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
+                HT1622_dispOFF(5,addr-1);//p
 				break;
 		case 4:
-				HT1622_dispON(0,addr);//a
+				HT1622_dispOFF(0,addr);//a
 				HT1622_dispON(3,addr);//b
 				HT1622_dispON(6,addr);//c
-				HT1622_dispON(7,addr);//d
-				HT1622_dispON(7,addr-1);//e
-				HT1622_dispON(4,addr-1);//f
-				HT1622_dispON(2,addr-1);//g
+				HT1622_dispOFF(7,addr);//d
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
 				HT1622_dispON(2,addr);//h
-				HT1622_dispON(1,addr-1);//i
-				HT1622_dispON(1,addr);//j
-				HT1622_dispON(3,addr-1);//k
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
 				HT1622_dispON(4,addr);//l
-                HT1622_dispON(6,addr-1);//m
-                HT1622_dispON(5,addr);//n
-                HT1622_dispON(0,addr-1);//o
-                HT1622_dispON(5,addr-1);//p
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
+                HT1622_dispOFF(5,addr-1);//p
 				break;
 		case 5:
 				HT1622_dispON(0,addr);//a
-				HT1622_dispON(3,addr);//b
+				HT1622_dispOFF(3,addr);//b
 				HT1622_dispON(6,addr);//c
 				HT1622_dispON(7,addr);//d
-				HT1622_dispON(7,addr-1);//e
-				HT1622_dispON(4,addr-1);//f
-				HT1622_dispON(2,addr-1);//g
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
 				HT1622_dispON(2,addr);//h
-				HT1622_dispON(1,addr-1);//i
-				HT1622_dispON(1,addr);//j
-				HT1622_dispON(3,addr-1);//k
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
 				HT1622_dispON(4,addr);//l
-                HT1622_dispON(6,addr-1);//m
-                HT1622_dispON(5,addr);//n
-                HT1622_dispON(0,addr-1);//o
-                HT1622_dispON(5,addr-1);//p
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
+                HT1622_dispOFF(5,addr-1);//p
 				break;
 		case 6:
 				HT1622_dispON(0,addr);//a
-				HT1622_dispON(3,addr);//b
+				HT1622_dispOFF(3,addr);//b
 				HT1622_dispON(6,addr);//c
 				HT1622_dispON(7,addr);//d
-				HT1622_dispON(7,addr-1);//e
-				HT1622_dispON(4,addr-1);//f
-				HT1622_dispON(2,addr-1);//g
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
 				HT1622_dispON(2,addr);//h
-				HT1622_dispON(1,addr-1);//i
-				HT1622_dispON(1,addr);//j
-				HT1622_dispON(3,addr-1);//k
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
 				HT1622_dispON(4,addr);//l
-                HT1622_dispON(6,addr-1);//m
-                HT1622_dispON(5,addr);//n
-                HT1622_dispON(0,addr-1);//o
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
                 HT1622_dispON(5,addr-1);//p
 				break;
 		case 7:
 				HT1622_dispON(0,addr);//a
 				HT1622_dispON(3,addr);//b
 				HT1622_dispON(6,addr);//c
-				HT1622_dispON(7,addr);//d
-				HT1622_dispON(7,addr-1);//e
-				HT1622_dispON(4,addr-1);//f
-				HT1622_dispON(2,addr-1);//g
-				HT1622_dispON(2,addr);//h
-				HT1622_dispON(1,addr-1);//i
-				HT1622_dispON(1,addr);//j
-				HT1622_dispON(3,addr-1);//k
-				HT1622_dispON(4,addr);//l
-                HT1622_dispON(6,addr-1);//m
-                HT1622_dispON(5,addr);//n
-                HT1622_dispON(0,addr-1);//o
-                HT1622_dispON(5,addr-1);//p
+				HT1622_dispOFF(7,addr);//d
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
+				HT1622_dispOFF(2,addr);//h
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
+				HT1622_dispOFF(4,addr);//l
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
+                HT1622_dispOFF(5,addr-1);//p
 				break;
 		case 8:
 				HT1622_dispON(0,addr);//a
 				HT1622_dispON(3,addr);//b
 				HT1622_dispON(6,addr);//c
 				HT1622_dispON(7,addr);//d
-				HT1622_dispON(7,addr-1);//e
-				HT1622_dispON(4,addr-1);//f
-				HT1622_dispON(2,addr-1);//g
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
 				HT1622_dispON(2,addr);//h
-				HT1622_dispON(1,addr-1);//i
-				HT1622_dispON(1,addr);//j
-				HT1622_dispON(3,addr-1);//k
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
 				HT1622_dispON(4,addr);//l
-                HT1622_dispON(6,addr-1);//m
-                HT1622_dispON(5,addr);//n
-                HT1622_dispON(0,addr-1);//o
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
                 HT1622_dispON(5,addr-1);//p
 				break;
 		case 9:
@@ -620,18 +620,18 @@ void HT1622_duan_big_t(u8 addr,u8 data)//还没有写好的  30
 				HT1622_dispON(3,addr);//b
 				HT1622_dispON(6,addr);//c
 				HT1622_dispON(7,addr);//d
-				HT1622_dispON(7,addr-1);//e
-				HT1622_dispON(4,addr-1);//f
-				HT1622_dispON(2,addr-1);//g
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
 				HT1622_dispON(2,addr);//h
-				HT1622_dispON(1,addr-1);//i
-				HT1622_dispON(1,addr);//j
-				HT1622_dispON(3,addr-1);//k
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
 				HT1622_dispON(4,addr);//l
-                HT1622_dispON(6,addr-1);//m
-                HT1622_dispON(5,addr);//n
-                HT1622_dispON(0,addr-1);//o
-                HT1622_dispON(5,addr-1);//p
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
+                HT1622_dispOFF(5,addr-1);//p
 				break;
 	}
 }
@@ -653,22 +653,43 @@ void HtlcdTime(u8 hour, u8 min, u8 sec) {//显示时间
 	HT1622_dispON(0,10);//小数点
 	HT1622_dispON(0,9);//小数点
 	
-	HT1622_duan_min(11,hour%10);//小时 个位
+	HtlcdAdrTime(11,hour%10);//小时 个位
 	
-	HT1622_duan_min(10,min/10);//分钟 十位
-	HT1622_duan_min(9,min%10);//分钟 个位
+	HtlcdAdrTime(10,min/10);//分钟 十位
+	HtlcdAdrTime(9,min%10);//分钟 个位
 	
-	HT1622_duan_min(8,sec/10);//秒 十位
-	HT1622_duan_min(7,sec%10);//秒 十位
-	
-	HT1622_disp_renew();
+	HtlcdAdrTime(8,sec/10);//秒 十位
+	HtlcdAdrTime(7,sec%10);//秒 十位
 }
 
-void HT1622_show_setp(u8 behind_setp,u8 rear_setp)//测试使用
-{
-	HT1622_duan_big(1,behind_setp);
-	HT1622_duan_big(3,rear_setp);
+void HtlcdRegion1(u8 bit, u16 data) {
+    HtlcdAdrNum(13,0);
+    HtlcdAdrNum(14,0);
+    HtlcdAdrNum(15,0);
+    HtlcdAdrNum(16,0);
+    HtlcdAdrNum(17,0);
+    HtlcdAdrNum(18,0);
+    HtlcdAdrNum(19,0);
 }
+
+void HtlcdRegion2(u8 bit, u16 data) {
+    HtlcdAdrBigNum(1,0);
+    HtlcdAdrBigNum(3,0);
+    HtlcdAdrNum(5,0);
+    HT1622_dispON(2,0);//km
+    HT1622_dispON(3,0);//h
+}
+
+void HtlcdRegion3(u8 bit, u8 num1, u8 num2, u8 num3, u8 num4) {
+    HtlcdAdrDoubleNum(21, num1);
+    HtlcdAdrDoubleNum(23, num2);
+    HtlcdAdrDoubleNum(25, num3);
+    HtlcdAdrDoubleNum(27, num4);
+}
+
+#define BACKLIGHT1 PC_ODR_ODR1
+#define BACKLIGHT2 PC_ODR_ODR2
+#define BACKLIGHT3 PC_ODR_ODR3
 
 void HtlcdInit(void) {
     u8  j = 0;
@@ -725,10 +746,21 @@ void HtlcdInit(void) {
     HT1622_dispON(0,5);
     HT1622_dispON(0,11);
 
-    HT1622_dispON(2,0);//km
-    HT1622_dispON(3,0);//h
-
     HT1622_dispON(4,0);//RS
     HT1622_dispON(6,2);//FS
+    
+    HtlcdRefresh();
+}
+void HtlcdOpenBacklight(void) {
+    BACKLIGHT1 = 0;
+    BACKLIGHT2 = 0;
+    BACKLIGHT3 = 0;
+    Sendcmd(LCD_ON);  
 }
 
+void HtlcdCloseBacklight(void) {
+    BACKLIGHT1 = 1;
+    BACKLIGHT2 = 1;
+    BACKLIGHT3 = 1;
+    Sendcmd(LCD_OFF);  
+}

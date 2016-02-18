@@ -33,7 +33,7 @@ __interrupt void TIM4_UPD_OVF_IRQHandler(void)
         count_time++;
     } else {
         count_time = 0;
-        sec_flag = 0x80;
+        sec_flag++;
     }
     
     return;

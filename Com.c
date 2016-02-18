@@ -28,11 +28,11 @@ u8 ComSend(u8 data[]) {
 	COM_BIT_INT = 0;//中断
 	COM_BIT_DR = 1;//设置为输出
 	COM_BIT_OUT = 0;
-	DelayUs(50);//拉低20ms说明总线开始
+	DelayUs(100);//拉低20ms说明总线开始
 	COM_BIT_DR = 0;//设置为输入
 	DelayUs(1);
 	while(COM_BIT_IN == 1) {//等待从机拉高
-		if(wait < 50) {
+		if(wait < 100) {
 			wait++;
 		} else {//超时，退出
 		
@@ -42,7 +42,7 @@ u8 ComSend(u8 data[]) {
 	}
 	wait = 0;
 	while(COM_BIT_IN == 0) {
-		if(wait < 50) {
+		if(wait < 100) {
 			wait++;
 		} else {//超时，退出
 		
@@ -55,16 +55,16 @@ u8 ComSend(u8 data[]) {
 		for(i=0;i<8;i++) {
 			COM_BIT_OUT = 0;
 			if(data_t&0x80) {
-				DelayUs(40);
+				DelayUs(80);
 			} else {
-				DelayUs(20);
+				DelayUs(40);
 			}
 			COM_BIT_OUT = 1;
-			DelayUs(10);
+			DelayUs(20);
 			data_t<<=1;
 		}
 	}
-	DelayUs(30);
+	DelayUs(60);
 	COM_BIT_OUT = 1;
 	COM_BIT_INT = 1;//中断
 	COM_BIT_DR = 0;//设置为输入
@@ -85,7 +85,7 @@ u8 ComRead(u8 data_s[]) {
 			return 0x44;
 		}
 	}
-	if(wait > 11) {
+	if(wait > 25) {
 		wait = 0;
 		COM_BIT_DR = 1;//设置为输出
 		COM_BIT_OUT = 0;
@@ -96,7 +96,7 @@ u8 ComRead(u8 data_s[]) {
 			for(i=0;i<8;i++) {  
 				data<<=1; 
 				while(COM_BIT_IN == 1) {
-					if(wait < 60) {
+					if(wait < 200) {
 						wait++;
 					} else {
 						return 0x44;
@@ -104,13 +104,13 @@ u8 ComRead(u8 data_s[]) {
 				}
 				wait = 0;
 				while(COM_BIT_IN == 0) {
-					if(wait < 60) {
+					if(wait < 200) {
 						wait++;
 					} else {
 						return 0x44;
 					}
 				}
-				if(wait > 11) {//为1
+				if(wait > 30) {//为1
 					data|=0x01;  
 				}
 				wait = 0;					
@@ -150,6 +150,7 @@ void ComClearFlag(void) {
 
 void ComSendCmdWatch(u8 cmd,u8 par1,u8 par2,u8 par3) {
     u8 com_t_data[5] = {0,0,0,0,0};//前拨
+    u8 com_t_data2[5] = {0,0,0,0,0};//前拨
 	com_t_data[0] = cmd; //cmd
 	com_t_data[1] = par1;
 	com_t_data[2] = par2;
@@ -157,6 +158,7 @@ void ComSendCmdWatch(u8 cmd,u8 par1,u8 par2,u8 par3) {
     com_t_data[4] = com_t_data[0]+com_t_data[1]+com_t_data[2]
                                     +com_t_data[3];
     INTOFF
+    ComSend(com_t_data2);
 	ComSend(com_t_data);
     INTEN
 }
