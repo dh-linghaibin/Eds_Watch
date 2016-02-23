@@ -122,6 +122,14 @@ void HT1622_dispOFF(u8 com,u8 SEG)
    // W1622_byte(SEG,dispram[SEG]);    
 }
 
+void HtlcdSetSisp(u8 com, u8 seg, u8 com_bit) {
+    if(com_bit == 0) {
+        HT1622_dispOFF(com,seg);
+    } else {
+        HT1622_dispON(com,seg);
+    }
+}
+
 void HtlcdClean(void)
 {
     u8  i;
@@ -168,71 +176,30 @@ void HtlcdDisAll(void)
     }
 
 }
+
+
+void HtcldSetAdr(u8 addr, u8 *num) {
+    u8 set_i = 0;
+    for( ; set_i < 7; set_i++) {
+        HtlcdSetSisp(set_i,addr,num[set_i]);
+    }
+}
+
 void HtlcdAdrNum(u8 addr,u8 data)//上面一行
 {
-	switch(data)
-	{
-		case 0:
-				HT1622_dispON(0,addr);HT1622_dispON(1,addr);
-				HT1622_dispON(2,addr);HT1622_dispOFF(3,addr);
-				HT1622_dispON(4,addr);HT1622_dispON(5,addr);
-				HT1622_dispON(6,addr);
-				break;
-		case 1:
-				HT1622_dispOFF(0,addr);HT1622_dispON(1,addr);
-				HT1622_dispOFF(2,addr);HT1622_dispOFF(3,addr);
-				HT1622_dispON(4,addr);HT1622_dispOFF(5,addr);
-				HT1622_dispOFF(6,addr);
-				break;
-		case 2:
-				HT1622_dispON(0,addr);HT1622_dispON(1,addr);
-				HT1622_dispOFF(2,addr);HT1622_dispON(3,addr);
-				HT1622_dispOFF(4,addr);HT1622_dispON(5,addr);
-				HT1622_dispON(6,addr);
-				break;
-		case 3:
-				HT1622_dispON(0,addr);HT1622_dispON(1,addr);
-				HT1622_dispOFF(2,addr);HT1622_dispON(3,addr);
-				HT1622_dispON(4,addr);HT1622_dispOFF(5,addr);
-				HT1622_dispON(6,addr);
-				break;
-		case 4:
-				HT1622_dispOFF(0,addr);HT1622_dispON(1,addr);
-				HT1622_dispON(2,addr);HT1622_dispON(3,addr);
-				HT1622_dispON(4,addr);HT1622_dispOFF(5,addr);
-				HT1622_dispOFF(6,addr);
-				break;
-		case 5:
-				HT1622_dispON(0,addr);HT1622_dispOFF(1,addr);
-				HT1622_dispON(2,addr);HT1622_dispON(3,addr);
-				HT1622_dispON(4,addr);HT1622_dispOFF(5,addr);
-				HT1622_dispON(6,addr);
-				break;
-		case 6:
-				HT1622_dispON(0,addr);HT1622_dispOFF(1,addr);
-				HT1622_dispON(2,addr);HT1622_dispON(3,addr);
-				HT1622_dispON(4,addr);HT1622_dispON(5,addr);
-				HT1622_dispON(6,addr);
-				break;
-		case 7:
-				HT1622_dispON(0,addr);HT1622_dispON(1,addr);
-				HT1622_dispOFF(2,addr);HT1622_dispOFF(3,addr);
-				HT1622_dispON(4,addr);HT1622_dispOFF(5,addr);
-				HT1622_dispOFF(6,addr);
-				break;
-		case 8:
-				HT1622_dispON(0,addr);HT1622_dispON(1,addr);
-				HT1622_dispON(2,addr);HT1622_dispON(3,addr);
-				HT1622_dispON(4,addr);HT1622_dispON(5,addr);
-				HT1622_dispON(6,addr);
-				break;
-		case 9:
-				HT1622_dispON(0,addr);HT1622_dispON(1,addr);
-				HT1622_dispON(2,addr);HT1622_dispON(3,addr);
-				HT1622_dispON(4,addr);HT1622_dispOFF(5,addr);
-				HT1622_dispON(6,addr);
-				break;
-	}
+    u8 num[10][7] = {
+        1,1,1,0,1,1,1,
+        0,1,0,0,1,0,0,
+        1,1,0,1,0,1,1,
+        1,1,0,1,1,0,1,
+        0,1,1,1,1,0,0,
+        1,0,1,1,1,0,1,
+        1,0,1,1,1,1,1,
+        1,1,0,0,1,0,0,
+        1,1,1,1,1,1,1,
+        1,1,1,1,1,0,1,
+    };
+    HtcldSetAdr(addr,num[data]);
 }
 
 void HtlcdAdrTime(u8 addr,u8 data)//显示时间的小位置
@@ -633,6 +600,42 @@ void HtlcdAdrDoubleNum(u8 addr,u8 data)//写好了 最后一行
                 HT1622_dispOFF(0,addr-1);//o
                 HT1622_dispOFF(5,addr-1);//p
 				break;
+        case 10:
+				HT1622_dispON(0,addr);//a
+				HT1622_dispON(3,addr);//b
+				HT1622_dispON(6,addr);//c
+				HT1622_dispON(7,addr);//d
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispON(4,addr-1);//f
+				HT1622_dispON(2,addr-1);//g
+				HT1622_dispON(2,addr);//h
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
+				HT1622_dispOFF(4,addr);//l
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
+                HT1622_dispON(5,addr-1);//p
+				break;
+        case 11:
+				HT1622_dispOFF(0,addr);//a
+				HT1622_dispOFF(3,addr);//b
+				HT1622_dispOFF(6,addr);//c
+				HT1622_dispOFF(7,addr);//d
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
+				HT1622_dispOFF(2,addr);//h
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispON(3,addr-1);//k
+				HT1622_dispON(4,addr);//l
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
+                HT1622_dispOFF(5,addr-1);//p
+				break;
 	}
 }
 
@@ -662,29 +665,48 @@ void HtlcdTime(u8 hour, u8 min, u8 sec) {//显示时间
 	HtlcdAdrTime(7,sec%10);//秒 十位
 }
 
-void HtlcdRegion1(u8 bit, u16 data) {
-    HtlcdAdrNum(13,0);
-    HtlcdAdrNum(14,0);
-    HtlcdAdrNum(15,0);
-    HtlcdAdrNum(16,0);
-    HtlcdAdrNum(17,0);
-    HtlcdAdrNum(18,0);
-    HtlcdAdrNum(19,0);
+void HtlcdSetTotalMileage(u8 num1, u8 num2, u8 num3, u8 num4, 
+                          u8 num5, u8 num6, u8 num7) {
+    HtlcdAdrNum(13,num1);
+    HtlcdAdrNum(14,num2);
+    HtlcdAdrNum(15,num3);
+    HtlcdAdrNum(16,num4);
+    HtlcdAdrNum(17,num5);
+    HtlcdAdrNum(18,num6);
+    HtlcdAdrNum(19,num7);
 }
 
+/*
 void HtlcdRegion2(u8 bit, u16 data) {
     HtlcdAdrBigNum(1,0);
     HtlcdAdrBigNum(3,0);
     HtlcdAdrNum(5,0);
     HT1622_dispON(2,0);//km
     HT1622_dispON(3,0);//h
+}*/
+
+void HtlcdSetSpeed(u8 num1, u8 num2, u8 num3) {
+    HtlcdAdrBigNum(1,num1);
+    HtlcdAdrBigNum(3,num2);
+    HtlcdAdrNum(5,num3);
 }
 
-void HtlcdRegion3(u8 bit, u8 num1, u8 num2, u8 num3, u8 num4) {
-    HtlcdAdrDoubleNum(21, num1);
-    HtlcdAdrDoubleNum(23, num2);
-    HtlcdAdrDoubleNum(25, num3);
-    HtlcdAdrDoubleNum(27, num4);
+void HtlcdSetStalls(u8 bit, u8 num) {//最下面一行
+    switch(bit) {
+        case 0:
+            HtlcdAdrDoubleNum(21, num);
+        break;
+        case 1:
+            HtlcdAdrDoubleNum(23, num);
+        break;
+        case 2:
+            HtlcdAdrDoubleNum(25, num);
+        break;
+        case 3:
+            HtlcdAdrDoubleNum(27, num);
+        break;
+        default:break;
+    }
 }
 
 #define BACKLIGHT1 PC_ODR_ODR1
@@ -748,8 +770,8 @@ void HtlcdInit(void) {
 
     HT1622_dispON(4,0);//RS
     HT1622_dispON(6,2);//FS
-    
-    HtlcdRefresh();
+    //HtlcdRegion2(1,1);
+    //HtlcdRefresh();
 }
 void HtlcdOpenBacklight(void) {
     BACKLIGHT1 = 0;

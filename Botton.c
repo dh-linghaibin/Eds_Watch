@@ -41,109 +41,77 @@ void BottonClooseInt(void) {
     PB_CR2_C26 = 0;
 }
 
-u8 BottonReadBehind(void) {
-    static u16 botton1_count = 0;
-    static u16 botton2_count = 0;
-    static u16 botton3_count = 0;
-    if(BEHIND1 == 0) {
-        if(botton1_count < 5000) {
-            botton1_count++;
-        } else {
-            if(BEHIND2 == 0) {
-                if(botton1_count < 10000) {
-                    botton1_count++;
-                } else {
-                    botton1_count = 20000;
-                }
-            } else {
-                if(botton1_count < 20000) {
-                    botton1_count = 5000;
-                }
-            }
-        }
-    } else {
-        if(botton1_count > 15000) {
-            botton1_count = 0;
-            return 0x80;
-        }
-        botton1_count = 0;
-        if(BEHIND2 == 0) {
-            if(botton2_count < 5000) {
-                botton2_count++;
-            } else {
-                botton2_count = 10000;
-            }
-        } else {
-            if(BEHIND3 == 1) {
-                if(botton2_count == 10000) {
-                    botton2_count = 0;
-                    return 0x81;
-                }
-            }
-            botton2_count = 0;
-        }
-        if(BEHIND3 == 0) {
-            if(botton3_count < 5000) {
-                botton3_count++;
-            } else {
-                botton3_count = 0;
-            }
-        } else {
-            botton3_count = 0;
-        }
-    }
-    return 0x00;
-}
-
-
-u8 BottonReadRear(void) {
-    static u16 botton1_count = 0;
-    if(BEHIND3 == 0) {
-        if(botton1_count < 5000) {
-            botton1_count++;
-        } else {
-            botton1_count = 20000;
-        }
-    } else {
-        if(botton1_count > 15000) {
-            botton1_count = 0;
-            return 0x80;
-        }
-        botton1_count = 0;
-    }
-    return 0x00;
-}
-
 u8 BottonRead(void) {
     static u16 botton1_count = 0;
     static u16 botton2_count = 0;
     static u16 botton3_count = 0;
-    static u16 botton4_count = 0;
+    static u16 small_count = 0;
     static u16 mode_count = 0;
     if(BEHIND1 == 0) {
         if(botton1_count < 5000) {
             botton1_count++;
-        } else { 
-            
         }
     } else {
-    
+        botton1_count = 0;
     }
     
     if(BEHIND2 == 0) {
-        
+        if(botton2_count < 5000) {
+            botton2_count++;
+        }
     } else {
-    
+        if(mode_count == 0) {
+            if( (botton1_count == 5000) && (botton2_count == 5000) ) {
+                botton1_count = 0;
+                botton2_count = 0;
+                return 0x01;
+            } else if(botton2_count == 5000) {
+                botton2_count = 0;
+                return 0x02;
+            }
+        }
+        botton2_count = 0;
     } 
     
     if(BEHIND3 == 0) { 
-    
+        if(botton3_count < 5000) {
+            botton3_count++;
+        }
     } else {
-        
+        if(mode_count == 0) {
+            if(botton3_count == 5000) {
+                botton3_count = 0;
+                return 0x03;
+            }
+        }
+        botton3_count = 0;
     }
     
-    
-    
+    if( (botton2_count > 4000) && (botton3_count > 4000) ) {
+        if(mode_count < 12000) {
+            if(small_count < 60) {
+                small_count++;
+            } else {
+                small_count = 0;
+                mode_count++;
+                if(mode_count == 1000) {
+                    return 0x11;
+                } else if(mode_count == 7000) {
+                    return 0x12;
+                } else if(mode_count == 11000) {
+                    return 0x13;
+                }
+            }
+        }
+    } else {
+        if( (botton2_count == 0) && (botton3_count == 0) ) {
+            if(mode_count > 100) {
+                mode_count = 0;
+                return 0x14;
+            }
+            mode_count = 0;
+        }
+    }
     return 0x00;
 }
 

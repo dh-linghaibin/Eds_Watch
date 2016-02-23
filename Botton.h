@@ -6,10 +6,9 @@
 #include "Type.h"
 
 void BottonInit(void);
-u8 BottonReadBehind(void);
-u8 BottonReadRear(void);
 void BottonOpenInt(void);
 void BottonClooseInt(void);
+u8 BottonRead(void);
 
 #endif
 

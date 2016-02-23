@@ -23,6 +23,16 @@ void TimerSetSec(u8 data) {
     sec_flag = data;
 }
 
+static u8 time_flag = 0;
+
+u8 TimerGetTimeFlag(void) {
+    return time_flag;
+}
+
+void TimerSetTimeFlag(u8 data) {
+    time_flag = data;
+}
+
 #pragma vector=0x19
 __interrupt void TIM4_UPD_OVF_IRQHandler(void)
 {
@@ -34,6 +44,7 @@ __interrupt void TIM4_UPD_OVF_IRQHandler(void)
     } else {
         count_time = 0;
         sec_flag++;
+        time_flag++;
     }
     
     return;
