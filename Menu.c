@@ -52,7 +52,7 @@ void MenuInit(void) {
     HtlcdTime(*(time+2),*(time+1),*(time));//显示时间
     //显示总里程
     HtlcdSetSisp(flicker[Menu_Data.area2+4][0],flicker[Menu_Data.area2+4][1],1);
-    HtlcdSetTotalMileage(1,2,3,4,5,8,9);
+    HtlcdSetTotalMileage(0,0,0,0,0,0,0);
     //显示速度栏目
     HtlcdSetSisp(flicker[Menu_Data.area2][0],flicker[Menu_Data.area2][1],1);
     //HtlcdSetSpeed(0,0,0);
@@ -66,38 +66,73 @@ void MenuRefreshTime(void) {
     HtlcdTime(*(time+2),*(time+1),*(time));//显示时间
 }
 
-/********
-蓝牙： (16,0)
-感叹号：(17,0)
-电池：(15,2) (15,3) (15,4) (15,7) (15,6) (15,5)
-海拔：(21,2)
-TM： (21,3)
-0D0:
-摄氏度：(15,0)
-定位：  (15,1)
-Km:   
-心率：(13,6)
-SPD: (13,7)
-MAX: (12,6)
-AVG:  (12,7)
-km/h：(9,2) (9,3)
-上下（S5，s6）:  (9,0) (9,1)
-FS : (11,6)
-灯：  (11,7)
-信号：(10,6)  //被动
-电话： (10,7) //被动
-RS: (9,4)    
-频率：(9,5)  
-设置：(9,6)
-初始化：(9,7)
-*******/
+void MenuSetRead(u8 *bit) {
+    if((*bit) < 3) {
+        (*bit)++;
+    } else {
+        (*bit) = 0;
+    }
+    switch(*bit) {
+        case 0: 
+        HtlcdSetSisp(6,2,0);
+        HtlcdSetSisp(4,0,1);
+        HtlcdSetStalls(0,Menu_Data.area3_fs);
+        HtlcdSetStalls(3,Menu_Data.area3_rs);
+        break;
+        case 1:
+        HtlcdSetSisp(6,2,1);
+        HtlcdSetSisp(4,0,0);
+        HtlcdSetStalls(0,Menu_Data.area3_fs);
+        HtlcdSetStalls(3,Menu_Data.area3_rs);
+        break;
+        case 2:
+        HtlcdSetSisp(6,2,0);
+        HtlcdSetSisp(4,0,0);
+        HtlcdSetStalls(0,11);
+        HtlcdSetStalls(3,Menu_Data.area3_rs);
+        break;
+        case 3:
+        HtlcdSetSisp(6,2,0);
+        HtlcdSetSisp(4,0,0);
+        HtlcdSetStalls(0,Menu_Data.area3_fs);
+        HtlcdSetStalls(3,11);
+        break;
+    }
+}
 
+static u8 menu_flag = 0;
+
+void MenuSetReadOk(u8 bit,u8 com) {
+    switch(bit) {
+        case 0:
+        ComSendCmdWatch(front,com,0x00,0x00);
+        break;
+        case 1:
+        ComSendCmdWatch(behind,com,0x00,0x00);
+        break;
+        case 2:
+        ComSendCmdWatch(front,set_inti,0x00,0x00);
+        HtlcdSetSisp(6,2,1);
+        HtlcdSetSisp(4,0,1);
+        HtlcdSetStalls(0,Menu_Data.area3_fs);
+        HtlcdSetStalls(3,Menu_Data.area3_rs);
+        menu_flag = 0;
+        break;
+        case 3:
+        ComSendCmdWatch(behind,set_inti,0x00,0x00);
+        HtlcdSetSisp(6,2,1);
+        HtlcdSetSisp(4,0,1);
+        HtlcdSetStalls(0,Menu_Data.area3_fs);
+        HtlcdSetStalls(3,Menu_Data.area3_rs);
+        menu_flag = 0;
+        break;
+    }
+}
 
 static u16 flickercount = 0;
 static u8 flickerbit = 0;
 
 void MenuSetFeatures(u8 com) {
-    static u8 menu_flag = 0;
     if(com == 0) {
         flickerbit = 1;
         //HtlcdSetSisp(flicker[Menu_Data.area3][0],flicker[Menu_Data.area3][1],0);
@@ -195,6 +230,7 @@ void MenuSetFeatures(u8 com) {
                 Menu_Data.area = Menu_Data.area4+9;
             }
         } else if(menu_flag == 7) {
+            /*
             if(Menu_Data.area4_rear == front) {
                 Menu_Data.area4_rear = behind;
                 HtlcdSetSisp(6,2,0);//------------
@@ -203,7 +239,8 @@ void MenuSetFeatures(u8 com) {
                 Menu_Data.area4_rear = front;
                 HtlcdSetSisp(6,2,1);//------------
                 HtlcdSetSisp(4,0,0);//------------
-            }
+            }*/
+            MenuSetRead(&Menu_Data.area4_rear);
         } else {
             //换挡
             ComSendCmdWatch(behind,sub_exchange,0x00,0x00);
@@ -216,19 +253,22 @@ void MenuSetFeatures(u8 com) {
             if(menu_flag == 5) {
                 if(Menu_Data.area4 == 2) {
                     menu_flag = 7;
+                    /*
                     if(Menu_Data.area4_rear == front) {
                         Menu_Data.area4_rear = behind;
                         HtlcdSetSisp(6,2,0);//------------
                     } else {
                         Menu_Data.area4_rear = front;
                         HtlcdSetSisp(4,0,0);
-                    }
+                    }*/
+                    MenuSetRead(&Menu_Data.area4_rear);
                 } else {
                     menu_flag = 0;
                 }
             } else if(menu_flag == 7) {
                 //步进加
-                ComSendCmdWatch(Menu_Data.area4_rear,add_setp,0x00,0x00);
+                //ComSendCmdWatch(Menu_Data.area4_rear,add_setp,0x00,0x00);
+                MenuSetReadOk(Menu_Data.area4_rear,add_setp);
             } else {
                 menu_flag = 0;
             }
@@ -249,19 +289,22 @@ void MenuSetFeatures(u8 com) {
             if(menu_flag == 5) {
                 if(Menu_Data.area4 == 2) {
                     menu_flag = 7;
+                    /*
                     if(Menu_Data.area4_rear == front) {
                         Menu_Data.area4_rear = behind;
                         HtlcdSetSisp(6,2,0);//------------
                     } else {
                         Menu_Data.area4_rear = front;
                         HtlcdSetSisp(4,0,0);
-                    }
+                    }*/
+                    MenuSetRead(&Menu_Data.area4_rear);
                 } else {
                     menu_flag = 0;
                 }
             } else if(menu_flag == 7) {
                 //步进加
-                ComSendCmdWatch(Menu_Data.area4_rear,sub_setp,0x00,0x00);
+                //ComSendCmdWatch(Menu_Data.area4_rear,sub_setp,0x00,0x00);
+                MenuSetReadOk(Menu_Data.area4_rear,sub_setp);
             } else {
                 menu_flag = 0;
             }

@@ -25,7 +25,7 @@ int main( void ) {
         u8 botton_bit = 0;
         if(TimerGetSec() > 30) {
             TimerSetSec(0);
-           // SysSleep();
+            SysSleep();
         }
         if(TimerGetTimeFlag() > 0x01) {
             TimerSetTimeFlag(0);
@@ -33,6 +33,9 @@ int main( void ) {
         }
         MenuFlickerServerTime();
         botton_bit = BottonRead();
+        if(botton_bit > 0x01) {
+            TimerSetSec(0);
+        }
         switch(botton_bit) {
             case 0x01:
                 MenuSetFeatures(7);

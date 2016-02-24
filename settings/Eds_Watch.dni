@@ -1,5 +1,5 @@
 [DebugChecksum]
-Checksum=-1267933832
+Checksum=-680678824
 [Stack]
 FillEnabled=0
 OverflowWarningsEnabled=1
@@ -19,15 +19,15 @@ LogEnabled=0
 GraphEnabled=0
 ShowTimeLog=1
 ShowTimeSum=1
-[TermIOLog]
-LoggingEnabled=_ 0
-LogFile=_ ""
+[Breakpoints]
+Count=0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
 Category=_ 0
-[Breakpoints]
-Count=0
+[TermIOLog]
+LoggingEnabled=_ 0
+LogFile=_ ""
 [Aliases]
 Count=0
 SuppressDialog=0
