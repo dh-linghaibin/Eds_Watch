@@ -19,4 +19,6 @@ void HtlcdSetTotalMileage(u8 num1, u8 num2, u8 num3, u8 num4,
                           u8 num5, u8 num6, u8 num7);
 void HtlcdSetSpeed(u8 num1, u8 num2, u8 num3);
 
+void HtlcdTimeNull(u8 bit);
+
 #endif

@@ -44,8 +44,8 @@ void MenuInit(void) {
     MenuSetBattery(Menu_Data.power); 
     //显示前后档位
     HtlcdSetStalls(0,Menu_Data.area3_fs);
-    HtlcdSetStalls(1,11);
-    HtlcdSetStalls(2,11);
+    HtlcdSetStalls(1,12);
+    HtlcdSetStalls(2,12);
     HtlcdSetStalls(3,Menu_Data.area3_rs);
     //show time
     time = Ds1302GetTime();
@@ -55,15 +55,22 @@ void MenuInit(void) {
     HtlcdSetTotalMileage(0,0,0,0,0,0,0);
     //显示速度栏目
     HtlcdSetSisp(flicker[Menu_Data.area2][0],flicker[Menu_Data.area2][1],1);
-    //HtlcdSetSpeed(0,0,0);
+    HtlcdSetSpeed(0,0,0);
     //刷新
     HtlcdRefresh();
 }
 
+static u8 flickerbit = 0;//闪烁标志位
+
 void MenuRefreshTime(void) {
     u8 *time;
-    time = Ds1302GetTime();
-    HtlcdTime(*(time+2),*(time+1),*(time));//显示时间
+    if(flickerbit == 0) {
+        time = Ds1302GetTime();
+        HtlcdTime(*(time+2),*(time+1),*(time));//显示时间
+        Menu_Data.time_h = *(time+2);
+        Menu_Data.time_m = *(time+1);
+        Menu_Data.time_s = *(time);
+    }
 }
 
 void MenuSetRead(u8 *bit) {
@@ -130,33 +137,23 @@ void MenuSetReadOk(u8 bit,u8 com) {
 }
 
 static u16 flickercount = 0;
-static u8 flickerbit = 0;
+static u8 flicker_bit = 0;
 
-void MenuSetFeatures(u8 com) {
-    if(com == 0) {
+void MenuSetFeatures(u8 com) {//闪烁
+    if(com == 0) {//显示第三快
         flickerbit = 1;
-        //HtlcdSetSisp(flicker[Menu_Data.area3][0],flicker[Menu_Data.area3][1],0);
-        /*
-        if(Menu_Data.area3 == 3) {
-            Menu_Data.area = 0; 
-        } else {
-            Menu_Data.area = Menu_Data.area3+1; 
-        }*/
+        flicker_bit = 0;//功能闪烁
         Menu_Data.area = Menu_Data.area3;
         flickercount = 0;
         menu_flag = 1;//set flag
-    } else if(com == 1) {
+    } else if(com == 1) {//显示第二块
+         flickerbit = 1;
+         flicker_bit = 0;//功能闪烁
         HtlcdSetSisp(flicker[Menu_Data.area][0],flicker[Menu_Data.area][1],1);
-        /*
-        if(Menu_Data.area2 == 2) {
-            Menu_Data.area = 4;
-        } else {
-            Menu_Data.area = Menu_Data.area2+5;
-        }*/
         Menu_Data.area = Menu_Data.area2+4;
         flickercount = 0;
         menu_flag = 2;//set flag
-    } else if(com == 2) {
+    } else if(com == 2) {//退出
         flickerbit = 0;
         HtlcdSetSisp(flicker[Menu_Data.area][0],flicker[Menu_Data.area][1],1);
         flickercount = 0;
@@ -171,28 +168,10 @@ void MenuSetFeatures(u8 com) {
             } else if(menu_flag == 6) {
                 menu_flag = 5;//set flag
             }
-            /*
-            if(Menu_Data.area < 4) {
-                if(Menu_Data.area3 < 3) {
-                    HtlcdSetSisp(flicker[Menu_Data.area-1][0],flicker[Menu_Data.area-1][1],0);
-                    Menu_Data.area3++;
-                } else {
-                    Menu_Data.area3 = 0;
-                    HtlcdSetSisp(flicker[3][0],flicker[3][1],0);
-                }
-            } else if(Menu_Data.area < 7) {
-                if(Menu_Data.area2 < 2) {
-                    HtlcdSetSisp(flicker[Menu_Data.area-1][0],flicker[Menu_Data.area-1][1],0);
-                    Menu_Data.area2++;
-                } else {
-                    Menu_Data.area2 = 0;
-                    HtlcdSetSisp(flicker[6][0],flicker[6][1],0);
-                }
-            }*/
         } else {
             flickerbit = 0;
         }
-    } else if(com == 4) {
+    } else if(com == 4) {//菜单页
         if(menu_flag == 3) {
             HtlcdSetSisp(flicker[Menu_Data.area][0],flicker[Menu_Data.area][1],0);
             if(Menu_Data.area3 < 3) {
@@ -230,37 +209,27 @@ void MenuSetFeatures(u8 com) {
                 Menu_Data.area = Menu_Data.area4+9;
             }
         } else if(menu_flag == 7) {
-            /*
-            if(Menu_Data.area4_rear == front) {
-                Menu_Data.area4_rear = behind;
-                HtlcdSetSisp(6,2,0);//------------
-                HtlcdSetSisp(4,0,1);//------------
-            } else {
-                Menu_Data.area4_rear = front;
-                HtlcdSetSisp(6,2,1);//------------
-                HtlcdSetSisp(4,0,0);//------------
-            }*/
             MenuSetRead(&Menu_Data.area4_rear);
+        } else if(menu_flag == 8) {
+            if(Menu_Data.area < 3) {
+                Menu_Data.area++;
+            } else {//设置时间推出
+                menu_flag = 0;
+                flickerbit = 0;
+                Ds1302SetTime(Menu_Data.time_h,Menu_Data.time_m);
+            }
         } else {
             //换挡
             ComSendCmdWatch(behind,sub_exchange,0x00,0x00);
         }
     } else if(com == 5) {
         if(menu_flag >= 3) {
-            flickerbit = 0;//停止闪烁
-            HtlcdSetSisp(flicker[Menu_Data.area][0],flicker[Menu_Data.area][1],1);
             //完成功能
             if(menu_flag == 5) {
+                flickerbit = 0;//停止闪烁
+                HtlcdSetSisp(flicker[Menu_Data.area][0],flicker[Menu_Data.area][1],1);
                 if(Menu_Data.area4 == 2) {
                     menu_flag = 7;
-                    /*
-                    if(Menu_Data.area4_rear == front) {
-                        Menu_Data.area4_rear = behind;
-                        HtlcdSetSisp(6,2,0);//------------
-                    } else {
-                        Menu_Data.area4_rear = front;
-                        HtlcdSetSisp(4,0,0);
-                    }*/
                     MenuSetRead(&Menu_Data.area4_rear);
                 } else {
                     menu_flag = 0;
@@ -269,6 +238,26 @@ void MenuSetFeatures(u8 com) {
                 //步进加
                 //ComSendCmdWatch(Menu_Data.area4_rear,add_setp,0x00,0x00);
                 MenuSetReadOk(Menu_Data.area4_rear,add_setp);
+            } else if(menu_flag == 8) {//修改时间
+                if(Menu_Data.area == 0) {
+                    if(Menu_Data.time_h < 24) {
+                        Menu_Data.time_h++;
+                    } else {
+                        Menu_Data.time_h = 0;
+                    }
+                } else if(Menu_Data.area == 1) {
+                    if(Menu_Data.time_m < 60) {
+                        Menu_Data.time_m++;
+                    } else {
+                        Menu_Data.time_m = 0;
+                    }
+                } else if(Menu_Data.area == 2) {
+                    if(Menu_Data.time_s < 60) {
+                        Menu_Data.time_s++;
+                    } else {
+                        Menu_Data.time_s = 0;
+                    }
+                }
             } else {
                 menu_flag = 0;
             }
@@ -279,24 +268,18 @@ void MenuSetFeatures(u8 com) {
     } else if(com == 6) {
         HtlcdSetSisp(flicker[Menu_Data.area][0],flicker[Menu_Data.area][1],1);
         Menu_Data.area = Menu_Data.area4+9;
+        flicker_bit = 0;//功能闪烁
         flickercount = 0;
         menu_flag = 6;//set flag
     } else if(com == 7) {
         if(menu_flag >= 3) {
-            flickerbit = 0;//停止闪烁
-            HtlcdSetSisp(flicker[Menu_Data.area][0],flicker[Menu_Data.area][1],1);
+            
             //完成功能
             if(menu_flag == 5) {
+                flickerbit = 0;//停止闪烁
+                HtlcdSetSisp(flicker[Menu_Data.area][0],flicker[Menu_Data.area][1],1);
                 if(Menu_Data.area4 == 2) {
                     menu_flag = 7;
-                    /*
-                    if(Menu_Data.area4_rear == front) {
-                        Menu_Data.area4_rear = behind;
-                        HtlcdSetSisp(6,2,0);//------------
-                    } else {
-                        Menu_Data.area4_rear = front;
-                        HtlcdSetSisp(4,0,0);
-                    }*/
                     MenuSetRead(&Menu_Data.area4_rear);
                 } else {
                     menu_flag = 0;
@@ -305,6 +288,26 @@ void MenuSetFeatures(u8 com) {
                 //步进加
                 //ComSendCmdWatch(Menu_Data.area4_rear,sub_setp,0x00,0x00);
                 MenuSetReadOk(Menu_Data.area4_rear,sub_setp);
+            } else if(menu_flag ==8) {//修改时间
+                if(Menu_Data.area == 0) {
+                    if(Menu_Data.time_h > 0) {
+                        Menu_Data.time_h--;
+                    } else {
+                        Menu_Data.time_h = 24;
+                    }
+                } else if(Menu_Data.area == 1) {
+                    if(Menu_Data.time_m > 0) {
+                        Menu_Data.time_m--;
+                    } else {
+                        Menu_Data.time_m = 59;
+                    }
+                } else if(Menu_Data.area == 2) {
+                    if(Menu_Data.time_s > 0) {
+                        Menu_Data.time_s--;
+                    } else {
+                        Menu_Data.time_s = 59;
+                    }
+                }
             } else {
                 menu_flag = 0;
             }
@@ -312,23 +315,33 @@ void MenuSetFeatures(u8 com) {
             //换挡加
             ComSendCmdWatch(front,sub_stal,0x00,0x00);
         }
+    } else if(com == 8) {
+        flickerbit = 1;//开始闪烁
+        flicker_bit = 2;//时间闪烁
+        menu_flag = 8;
+        Menu_Data.area = 0;
     }
 }
 
 //闪烁 功能设置
 void MenuFlickerServerTime(void) {
-    static u8 bit = 0;
-    if(flickercount < 50000) {
+    if(flickercount < 30000) {
         flickercount++;
     } else {
         flickercount = 0;
         if(flickerbit == 1) {
-            if(bit == 0) {
-                bit = 1;
+            if(flicker_bit == 0) {
+                flicker_bit = 1; 
                 HtlcdSetSisp(flicker[Menu_Data.area][0],flicker[Menu_Data.area][1],0);
-            } else {
+            } else if(flicker_bit == 1){
+                flicker_bit = 0;
                 HtlcdSetSisp(flicker[Menu_Data.area][0],flicker[Menu_Data.area][1],1);
-                bit = 0;
+            } else if(flicker_bit == 2) {
+                flicker_bit = 3;
+                HtlcdTime(Menu_Data.time_h,Menu_Data.time_m,Menu_Data.time_s);//显示时间
+            } else if(flicker_bit == 3) {
+                flicker_bit = 2;
+                HtlcdTimeNull(Menu_Data.area);//显示时间
             }
         }
         HtlcdRefresh();
@@ -390,7 +403,7 @@ void MenuSetStalls(u8 bit, u8 num) {
         EepromWrite(10,Menu_Data.area3_fs);
         HtlcdSetStalls(0,Menu_Data.area3_fs);
     } else {
-        Menu_Data.area3_rs = num;
+        Menu_Data.area3_rs = 11 - num;
         EepromWrite(11,Menu_Data.area3_rs);
         HtlcdSetStalls(3,Menu_Data.area3_rs);
     }

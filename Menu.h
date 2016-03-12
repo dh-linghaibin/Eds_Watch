@@ -32,6 +32,10 @@ typedef struct Menu{
     u8 area4_rear;
     
     u8 power;
+    
+    u8 time_h;
+    u8 time_m;
+    u8 time_s;
 } 
 Menu_bit;
 

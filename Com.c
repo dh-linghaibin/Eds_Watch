@@ -163,7 +163,7 @@ void ComSendCmdWatch(u8 cmd,u8 par1,u8 par2,u8 par3) {
     INTEN
 }
 
-#pragma vector=5
+#pragma vector=7
 __interrupt void EXTI_PORTA_IRQHandler(void)
 {
     INTOFF

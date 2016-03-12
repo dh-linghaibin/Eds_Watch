@@ -24,8 +24,8 @@
 
 #define       DATA         PC_ODR_ODR5      //数据
 #define       WR           PC_ODR_ODR6       //写
-#define       CS           PD_ODR_ODR0          //片选
-#define       CS_2         PD_ODR_ODR0          //片选
+#define       CS           PE_ODR_ODR6          //片选
+#define       CS_2         PE_ODR_ODR6          //片选
 
 static u8 dispram[32];    //预设显示缓存，8x32
 
@@ -185,6 +185,30 @@ void HtcldSetAdr(u8 addr, u8 *num) {
     }
 }
 
+void HtcldSetAdr2(u8 addr, u8 *num) {
+    u8 set_i = 0;
+    for( ; set_i < 7; set_i++) {
+        HtlcdSetSisp(set_i+1,addr,num[set_i]);
+    }
+}
+
+void HtlcdAdrNum2(u8 addr,u8 data)//上面一行
+{
+    u8 num[10][7] = {
+        1,1,1,0,1,1,1,
+        0,1,0,0,1,0,0,
+        1,1,0,1,0,1,1,
+        1,1,0,1,1,0,1,
+        0,1,1,1,1,0,0,
+        1,0,1,1,1,0,1,
+        1,0,1,1,1,1,1,
+        1,1,0,0,1,0,0,
+        1,1,1,1,1,1,1,
+        1,1,1,1,1,0,1,
+    };
+    HtcldSetAdr2(addr,num[data]);
+}
+
 void HtlcdAdrNum(u8 addr,u8 data)//上面一行
 {
     u8 num[10][7] = {
@@ -265,6 +289,12 @@ void HtlcdAdrTime(u8 addr,u8 data)//显示时间的小位置
 				HT1622_dispON(5,addr);HT1622_dispON(4,addr);
 				HT1622_dispON(3,addr);HT1622_dispOFF(2,addr);
 				HT1622_dispON(1,addr);
+				break;
+        case 10:
+				HT1622_dispOFF(7,addr);HT1622_dispOFF(6,addr);
+				HT1622_dispOFF(5,addr);HT1622_dispOFF(4,addr);
+				HT1622_dispOFF(3,addr);HT1622_dispOFF(2,addr);
+				HT1622_dispOFF(1,addr);
 				break;
 	}
 }
@@ -620,6 +650,24 @@ void HtlcdAdrDoubleNum(u8 addr,u8 data)//写好了 最后一行
 				break;
         case 11:
 				HT1622_dispOFF(0,addr);//a
+				HT1622_dispON(3,addr);//b
+				HT1622_dispON(6,addr);//c
+				HT1622_dispOFF(7,addr);//d
+				HT1622_dispOFF(7,addr-1);//e
+				HT1622_dispOFF(4,addr-1);//f
+				HT1622_dispOFF(2,addr-1);//g
+				HT1622_dispON(2,addr);//h
+				HT1622_dispOFF(1,addr-1);//i
+				HT1622_dispOFF(1,addr);//j
+				HT1622_dispOFF(3,addr-1);//k
+				HT1622_dispOFF(4,addr);//l
+                HT1622_dispOFF(6,addr-1);//m
+                HT1622_dispOFF(5,addr);//n
+                HT1622_dispOFF(0,addr-1);//o
+                HT1622_dispON(5,addr-1);//p
+				break;
+        case 12:
+				HT1622_dispOFF(0,addr);//a
 				HT1622_dispOFF(3,addr);//b
 				HT1622_dispOFF(6,addr);//c
 				HT1622_dispOFF(7,addr);//d
@@ -665,6 +713,23 @@ void HtlcdTime(u8 hour, u8 min, u8 sec) {//显示时间
 	HtlcdAdrTime(7,sec%10);//秒 十位
 }
 
+void HtlcdTimeNull(u8 bit) {//显示时间
+    if(bit == 0) {
+        HT1622_dispOFF(4,12);
+        HT1622_dispOFF(5,12);
+        HT1622_dispOFF(6,12);
+        HtlcdAdrTime(11,10);//小时 个位
+	} else if(bit == 1) {
+        HtlcdAdrTime(10,10);//分钟 十位
+        HtlcdAdrTime(9,10);//分钟 个位
+	} else if(bit ==2) {
+        HtlcdAdrTime(8,10);//秒 十位
+        HtlcdAdrTime(7,10);//秒 十位
+	} else {
+	
+    }
+}
+
 void HtlcdSetTotalMileage(u8 num1, u8 num2, u8 num3, u8 num4, 
                           u8 num5, u8 num6, u8 num7) {
     HtlcdAdrNum(13,num1);
@@ -688,7 +753,9 @@ void HtlcdRegion2(u8 bit, u16 data) {
 void HtlcdSetSpeed(u8 num1, u8 num2, u8 num3) {
     HtlcdAdrBigNum(1,num1);
     HtlcdAdrBigNum(3,num2);
-    HtlcdAdrNum(5,num3);
+    HtlcdAdrNum2(5,num3);
+    HT1622_dispON(2,0);//km
+    HT1622_dispON(3,0);//h
 }
 
 void HtlcdSetStalls(u8 bit, u8 num) {//最下面一行
@@ -709,16 +776,14 @@ void HtlcdSetStalls(u8 bit, u8 num) {//最下面一行
     }
 }
 
-#define BACKLIGHT1 PC_ODR_ODR1
-#define BACKLIGHT2 PC_ODR_ODR2
-#define BACKLIGHT3 PC_ODR_ODR3
+#define BACKLIGHT1 PB_ODR_ODR2
 
 void HtlcdInit(void) {
     u8  j = 0;
-    //CS PD0
-    PD_DDR |= BIT(0);
-    PD_CR1 |= BIT(0); 
-    PD_CR2 &= ~BIT(0);
+    //CS PE6
+    PE_DDR |= BIT(6);
+    PE_CR1 |= BIT(6); 
+    PE_CR2 &= ~BIT(6);
     //RD PC7
     PC_DDR |= BIT(7);
     PC_CR1 |= BIT(7); 
@@ -732,17 +797,12 @@ void HtlcdInit(void) {
     PC_CR1 |= BIT(5); 
     PC_CR2 &= ~BIT(5);
     //背光 PC1 PC2 PC3 
-    PC_DDR |= BIT(1);
-    PC_CR1 |= BIT(1); 
-    PC_CR2 |= BIT(1);
-
-    PC_DDR |= BIT(2);
-    PC_CR1 |= BIT(2); 
-    PC_CR2 |= BIT(2);
-
-    PC_DDR |= BIT(3);
-    PC_CR1 |= BIT(3); 
-    PC_CR2 |= BIT(3);
+    PB_DDR |= BIT(2);
+    PB_CR1 |= BIT(2); 
+    PB_CR2 |= BIT(2);
+    
+    PC_ODR_ODR7 = 1;
+    
     for(j=0; j<32; j++) {
         dispram[j] = 0;
     }
@@ -775,14 +835,10 @@ void HtlcdInit(void) {
 }
 void HtlcdOpenBacklight(void) {
     BACKLIGHT1 = 0;
-    BACKLIGHT2 = 0;
-    BACKLIGHT3 = 0;
-    Sendcmd(LCD_ON);  
+   // Sendcmd(LCD_ON);  
 }
 
 void HtlcdCloseBacklight(void) {
     BACKLIGHT1 = 1;
-    BACKLIGHT2 = 1;
-    BACKLIGHT3 = 1;
-    Sendcmd(LCD_OFF);  
+  //  Sendcmd(LCD_OFF);  
 }

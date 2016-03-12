@@ -4,27 +4,27 @@
 #include "Delay.h"
 
 
-#define DS13CLK 	PB_ODR_ODR2		    //1302 CLK
-#define DS13IO	    PB_DDR_DDR1		    //IO方向0为输入，1为输出
-#define DS13O		PB_ODR_ODR1			//out
-#define DS13I		PB_IDR_IDR1         //in
-#define DS13CS	    PB_ODR_ODR0		    //RST
+#define DS13CLK 	PD_ODR_ODR1		    //1302 CLK
+#define DS13IO	    PD_DDR_DDR2		    //IO方向0为输入，1为输出
+#define DS13O		PD_ODR_ODR2			//out
+#define DS13I		PD_IDR_IDR2         //in
+#define DS13CS	    PD_ODR_ODR3		    //RST
 
 #define NOP()	asm("nop;")
 
 void Ds1302Init(void) {
     //RST PB0
-    PB_DDR |= BIT(0);
-    PB_CR1 |= BIT(0); 
-    PB_CR2 |= BIT(0);
+    PD_DDR |= BIT(3);
+    PD_CR1 |= BIT(3); 
+    PD_CR2 |= BIT(3);
     //I/O PB1
-    PB_DDR &= ~BIT(1);
-    PB_CR1 |= BIT(1); 
-    PB_CR2 &= ~BIT(1);
+    PD_DDR &= ~BIT(2);
+    PD_CR1 |= BIT(2); 
+    PD_CR2 &= ~BIT(2);
     //SCLK PB2
-    PB_DDR |= BIT(2);
-    PB_CR1 |= BIT(2); 
-    PB_CR2 |= BIT(2);
+    PD_DDR |= BIT(1);
+    PD_CR1 |= BIT(1); 
+    PD_CR2 |= BIT(1);
 }
 
 /*向DS1302写一个字节*/

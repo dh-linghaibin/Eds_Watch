@@ -23,7 +23,7 @@ int main( void ) {
     INTEN
     while(1) {
         u8 botton_bit = 0;
-        if(TimerGetSec() > 30) {
+        if(TimerGetSec() > 20) {
             TimerSetSec(0);
             SysSleep();
         }
@@ -35,6 +35,7 @@ int main( void ) {
         botton_bit = BottonRead();
         if(botton_bit > 0x01) {
             TimerSetSec(0);
+            SysOpen();
         }
         switch(botton_bit) {
             case 0x01:
@@ -47,15 +48,18 @@ int main( void ) {
                 MenuSetFeatures(4);
             break;//前换挡
             case 0x11:
-                MenuSetFeatures(0);
+                MenuSetFeatures(1);
             break;//区域3
             case 0x12:
                 MenuSetFeatures(6);//1
             break;//区域2
             case 0x13:
-                MenuSetFeatures(2);
+                MenuSetFeatures(8);
             break;//区域1
             case 0x14:
+                MenuSetFeatures(2);
+            break;//区域1
+            case 0x15:
                 MenuSetFeatures(3);
             break;//放开信号
         }

@@ -1,12 +1,12 @@
 
 #include "Led.h"
 
-#define LED 	PD_ODR_ODR7
+#define LED 	PA_ODR_ODR4
 
 void LedInit(void) {
-    PD_DDR_DDR7 = 1;
-    PD_CR1_C17 = 1;
-    PD_CR2_C27 = 0;
+    PA_DDR_DDR4 = 1;
+    PA_CR1_C14 = 1;
+    PA_CR2_C24 = 0;
 }
 
 void LedSet(u8 cmd) {
